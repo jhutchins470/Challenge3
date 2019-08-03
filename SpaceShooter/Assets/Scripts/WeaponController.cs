@@ -5,6 +5,7 @@ using UnityEngine;
 public class WeaponController : MonoBehaviour
 {
     public GameObject shot;
+    public GameObject ship;
     public Transform shotSpawn;
     public float fireRate;
     public float delay;
@@ -19,5 +20,5 @@ public class WeaponController : MonoBehaviour
     {
         Instantiate (shot, shotSpawn.position, shotSpawn.rotation);
         audioSource.Play ();
-    }
+}
 }

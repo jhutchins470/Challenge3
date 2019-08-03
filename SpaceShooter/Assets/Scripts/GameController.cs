@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class GameController : MonoBehaviour
 {
 public GameObject[] hazards;
-public GameObject player;
 public Vector3 spawnValues;
 public int hazardCount;
 public float spawnWait;
@@ -14,20 +13,33 @@ public float startWait;
 public float waveWait;
 public Text scoreText;
 public Text restartText;
+public Text hardText;
 public Text gameOverText;
 public Text winText;
-private int score;
+public AudioSource winner;
+public AudioSource loser;
+public AudioSource bkgdMusic;
+public int score;
 private bool restart;
+private bool restart_hard;
 private bool gameOver;
 
+void Awake ()
+{
+    bkgdMusic = GetComponent<AudioSource>();
+}
 void Start()
     {
+bkgdMusic.Play();
 gameOver = false;
 restart = false;
+restart_hard = false;
+hardText.text = "";
 restartText.text = "";
 gameOverText.text = "";
 winText.text = "";
 score = 0;
+
 UpdateScore();
         StartCoroutine(SpawnWaves());
     }
@@ -44,6 +56,13 @@ void Update ()
         if (Input.GetKeyDown (KeyCode.Space))
         {
             SceneManager.LoadScene("SpaceShooter");
+        }
+    }
+    if (restart_hard)
+    {
+        if (Input.GetKeyDown (KeyCode.H))
+        {
+            SceneManager.LoadScene("SpaceShooterHard");
         }
     }
 
@@ -67,6 +86,8 @@ yield return new WaitForSeconds(startWait);
      if (gameOver)
      {
          restartText.text = "Press 'Space' for Restart";
+         hardText.text = "Press 'H' for Hard Mode";
+         restart_hard = true;
          restart = true;
          break;
      }
@@ -79,22 +100,33 @@ score += newScoreValue;
 UpdateScore();
 }
 
-void UpdateScore()
+public void UpdateScore()
 {
 scoreText.text = "Points: " + score;
 if(score >= 100)
 {
-    winText.text="You Win!\nGame created by\nJulia Hutchins";
-    gameOver = true;
-    gameOverText.text = "";
-    restart = true;
-    Destroy(player);
+    Win ();
 }
 }
 public void GameOver ()
 {
-    gameOverText.text = "Game Over!";
-    gameOver = true;
+    bkgdMusic.mute = true;
+    loser.Play ();
+         gameOverText.text = "Game Over!";
+         gameOver = true;
+}
+public void WinMusic ()
+{
+    bkgdMusic.mute = true;
+    winner.Play ();
 }
 
+public void Win ()
+{
+    WinMusic ();
+    winText.text="You Win!\nGame created by\nJulia Hutchins";
+    gameOver = true;
+    gameOverText.text = "";
+    restart = true;
+}
 }
